@@ -1,86 +1,65 @@
 # TEFManager 陈什么改版
 
-> 基于 [eternalfuture-e38299/TEFManager](https://github.com/eternalfuture-e38299/TEFManager) 的修改版。
-> 原项目采用 **GNU Affero General Public License v3.0** 授权，本改版同样以 AGPL v3.0 发布。
+> 基于 [eternalfuture-e38299/TEFManager](https://github.com/eternalfuture-e38299/TEFManager) 的个人改版，遵循 **AGPL v3** 协议开源。
 
-## 这是什么
+安卓端泰拉瑞亚（Terraria）模组管理器 TEFManager 的增强版，在原版基础上增加了「合集」管理、数据导出、启动时序修复等实用功能。
 
-泰拉瑞亚 PE 的模组管理器（1.4.5.8 / Android）。本改版在原版基础上增加了「合集」功能，并修复了几处加载时序问题。
+## 下载
 
-## 版本
+去 [Releases](https://github.com/chen2960374526/TEFManager-ChenFork/releases) 下载最新 `TEFManager-2.1.0-chenfork.apk`。
 
-| 项 | 值 |
-|---|---|
-| 显示版本 | 2.1.0 |
-| versionCode | 2026110100 |
-| 签名 | 与原版同一证书，可直接覆盖安装 |
+- 版本号：`versionName 2.1.0` / `versionCode 2026110100`（与原版 2.1.0 完全一致）
+- 签名：与原版同一证书（SHA-256 `7fa423bc67…69e`）
+- **可以直接覆盖安装原版，也可以被原版覆盖，不用卸载，数据不丢**
 
-> 版本号固定不变，任意一版（包括原版）都能互相覆盖安装，不用卸载。
+## 改了什么
 
-## 本改版相对原版的改动
+### 1. 模组合集
 
-### 1. 模组合集（模组仓库页）
+模组仓库页新增「合集」栏（在「下载」之前）。
 
-- 模组仓库页新增「合集」栏，位于「下载」前面
-- 一个合集 = 一个 zip，里面可以混装不同加载器的模组（LuaLoader / KernelLoader …）
-- 合集包只需要放模组安装包，`Collection.json` 可选（不写就用 zip 文件名当合集名）
-- 卡片折叠显示合集名 + 模组数 + 总开关，点开展开看里面每个模组，各自独立开关
-- 装完默认全部关闭；开关点了立刻生效
-- 可以同时装多个合集（按合集名区分，不会互相覆盖）
+- 一个合集包 = 一个 zip，里面直接放各加载器的模组安装包（LuaLoader / KernelLoader 混装都行），不需要额外的说明文件
+- 可以同时装多个合集（按合集名字区分，同名视为更新）
+- 卡片折叠显示合集名、版本、`N 个模组 · 已开启 x/y`，点开展示内部模组
+- 卡片右侧总开关一键全开/全关，每个模组保留独立小开关
+- 装完默认全部关闭
+- 删除合集 = 连里面的模组一起从设备删除，不用一个个手动删
 
-### 2. 资源包合集（资源包页）
+### 2. 资源包合集
 
-- 资源包页最前面新增「合集」栏（在语言包之前）
-- 合集包里可以混装语言包 / 语言补丁包 / 材质包 / 字体包 / 音频包，类型自动识别
-- 交互与模组合集一致
+资源包页最前面新增「合集」栏，语言包 / 语言补丁包 / 材质包 / 字体包 / 音频包可以混装，类型自动识别。
 
-### 3. 启动时序修复
+页签顺序：`合集 → 材质包 → 音频包 → 语言包 → 语言补丁包 → 字体包`
 
-- 启动游戏前会先结束旧的游戏进程
-- 原因：内核只在游戏进程初始化时读一次配置，复用旧进程会导致新加/删除的模组、材质包、音乐包不生效（表现为「要启动两次才生效」）
+### 3. 导出数据（设置 → 常规 → 导出数据）
 
-### 4. 协议相关
+- 自己勾选要导出的内容：模组 / 加载器 / 内置模块 / 插件 / 各类资源包 / 内核
+- **每个条目导出成一个独立压缩包，结构和当初导入的一模一样，可以再次导入**
+- 导出目录可自定义（系统目录选择器）
+- 压缩包名跟界面上显示的名字一致，例如 `你已是完全之龙了v10.0.0.zip`
+- 内核也能导出成 `TEFKernel_vX.Y.Z.zip`（info.json + 各平台 so，可直接安装）
 
-- 新增文件均带有 AGPL v3 协议头
-- APK 内打包 AGPL v3 许可证全文（`assets/LICENSE`）
-- 关于页的「许可证」一行可点击查看 AGPL 全文
+### 4. 启动时序修复
 
-## 安装
+启动游戏前先 `su -c am force-stop` 结束旧进程，解决「加/删模组、材质包、音乐包后必须启动两次才生效」的问题。
 
-1. 下载 Releases 里的 APK
-2. 直接覆盖安装（与原版签名、versionCode 一致，不需要卸载）
-3. 如果之前装过 versionCode 更高的测试版，可能提示无法安装，卸载一次即可
+### 5. 保留官方功能
+
+- 检查更新、更新弹窗（本体 / 内核 / TEFLoader / 语言包 / 材质包 / 字体包 / 音乐包）
+- 内置模块使用官方发行版：材质包 2.0.6、音频包 2.0.0、语言包 1.0.2、字体包 1.0.1
+- AGPL v3 合规：源码随包发布，关于页许可证可点击查看协议全文
 
 ## 源码
 
-本仓库包含完整对应源码：
+- 仓库内 `source.zip` 为当前版本的完整源码
+- Release 附件里也带一份 `TEFManager-2.1.0-chenfork-source.zip`
 
-- `source/` 目录：完整可编译工程（Kotlin Multiplatform + Compose）
-- Releases 里附带的源码 zip 与 APK 严格对应
+## 协议
 
-编译方式（与原项目一致）：
+本项目基于 TEFManager（作者 eternalfuture-e38299）修改，遵循 **GNU Affero General Public License v3.0**，详见 [LICENSE](LICENSE)。
 
-```bash
-export JAVA_HOME=/path/to/jdk-21
-export ANDROID_HOME=/path/to/android-sdk
-./gradlew :composeApp:assembleRelease
-```
-
-## 许可证
-
-本项目遵循 **GNU Affero General Public License v3.0**，完整文本见 [LICENSE](LICENSE)。
-
-这意味着：
-
-- 你可以自由使用、修改、再分发
-- 再分发时必须同样以 AGPL v3 开源，并提供完整对应源码
-- 通过网络提供服务时，也必须向用户提供源码
-
-## 致谢
-
-- 原作者：[eternalfuture-e38299](https://github.com/eternalfuture-e38299)（TEFManager / TEFKernel）
-- 模组加载器：LuaLoader、KernelLoader
+二次分发请保留同样的开源义务：**APK 和对应源码要一起提供**。
 
 ## 免责声明
 
-本软件与 Terraria 官方无关，仅供学习与个人使用。使用本软件修改游戏产生的任何后果由使用者自行承担。
+本软件与 Terraria 官方及 Re-Logic 无关，仅供学习与个人使用。使用本软件修改游戏产生的任何后果由使用者自行承担。
